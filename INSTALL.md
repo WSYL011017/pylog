@@ -76,3 +76,7 @@ pip install --upgrade log-framework
 ```bash
 pip uninstall log-framework
 ```
+
+## 许可证
+
+本项目采用 MIT 许可证。详情请参见 [LICENSE](../LICENSE) 文件。
