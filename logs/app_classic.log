@@ -1,0 +1,4 @@
+2025-12-30 19:33:13,174 - [MainThread] - test_logger - INFO - 这是一条测试日志 - Info
+2025-12-30 19:33:13,174 - [MainThread] - test_logger - WARNING - 这是一条测试日志 - Warning
+2025-12-30 19:33:13,175 - [MainThread] - test_logger - ERROR - 这是一条测试日志 - Error
+2025-12-30 19:33:13,175 - [MainThread] - __main__.TestClass - INFO - 通过装饰器注入的logger测试

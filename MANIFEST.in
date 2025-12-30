@@ -1,0 +1,7 @@
+include README.md
+include README.zh-CN.md
+include requirements.txt
+include pyproject.toml
+include setup.py
+recursive-include log_framework *.py *.yaml *.yml
+recursive-include tests *.py

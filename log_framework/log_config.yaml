@@ -1,0 +1,63 @@
+version: 1
+disable_existing_loggers: False
+
+formatters:
+  # 经典格式：时间 - 线程 - Logger名 - 级别 - 消息
+  classic:
+    format: "%(asctime)s - [%(threadName)s] - %(name)s - %(levelname)s - %(message)s"
+  
+  # JSON 格式
+  json:
+    (): log_framework.JSONFormatter
+
+filters:
+  vip_filter:
+    (): log_framework.ContextFilter
+    key: user_type
+    value: vip
+
+handlers:
+  console:
+    class: logging.StreamHandler
+    level: INFO
+    formatter: classic
+    stream: ext://sys.stdout
+
+  # 1. 经典日志文件 (可见，方便阅读)
+  file_classic:
+    class: logging.handlers.TimedRotatingFileHandler
+    level: DEBUG
+    formatter: classic
+    filename: ./logs/app_classic.log
+    when: "midnight"
+    interval: 1
+    backupCount: 7
+    encoding: "utf8"
+
+  # 2. JSON 日志文件 (隐藏，方便机器解析)
+  file_json:
+    (): log_framework.HiddenTimedRotatingFileHandler
+    level: DEBUG
+    formatter: json
+    filename: ./logs/app_json.log
+    when: "midnight"
+    interval: 1
+    backupCount: 7
+    encoding: "utf8"
+
+  vip_file:
+    class: logging.FileHandler
+    level: INFO
+    formatter: json
+    filename: ./logs/vip.log
+    filters: [vip_filter]
+    encoding: "utf8"
+
+root:
+  level: INFO
+  handlers: [console, file_classic, file_json, vip_file]
+
+loggers:
+  my_module:
+    level: DEBUG
+    # propagate: True (默认)

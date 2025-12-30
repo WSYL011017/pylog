@@ -1,0 +1,4 @@
+{"timestamp": "2025-12-30T19:33:13.174898", "level": "INFO", "logger": "test_logger", "message": "这是一条测试日志 - Info", "thread": "MainThread", "file": "verify_installation.py", "line": 24, "hostname": "localhost"}
+{"timestamp": "2025-12-30T19:33:13.174966", "level": "WARNING", "logger": "test_logger", "message": "这是一条测试日志 - Warning", "thread": "MainThread", "file": "verify_installation.py", "line": 25, "hostname": "localhost"}
+{"timestamp": "2025-12-30T19:33:13.175005", "level": "ERROR", "logger": "test_logger", "message": "这是一条测试日志 - Error", "thread": "MainThread", "file": "verify_installation.py", "line": 26, "hostname": "localhost"}
+{"timestamp": "2025-12-30T19:33:13.175183", "level": "INFO", "logger": "__main__.TestClass", "message": "通过装饰器注入的logger测试", "thread": "MainThread", "file": "verify_installation.py", "line": 42, "hostname": "localhost"}
