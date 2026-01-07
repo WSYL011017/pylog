@@ -1,0 +1,17 @@
+configuration:
+  appenders:
+    console:
+      name: Console
+      target: SYSTEM_OUT
+      json_layout:
+        compact: false
+  loggers:
+    root:
+      level: INFO
+      appender_refs:
+        - ref: Console
+    my.app:
+      level: DEBUG
+      additivity: false
+      appender_refs:
+        - ref: Console

@@ -1,0 +1,42 @@
+[build-system]
+requires = ["setuptools>=42", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pylog"
+version = "2.1.0"
+description = "A production-ready logging library for Python inspired by Log4j2"
+readme = "README.md"
+requires-python = ">=3.8"
+license = {text = "MIT"}
+authors = [
+    {name = "PyLog Team", email = "pylog@example.com"}
+]
+dependencies = [
+    "orjson",
+    "PyYAML",
+    "watchdog"
+]
+
+[project.optional-dependencies]
+kafka = [
+    "confluent-kafka"
+]
+dev = [
+    "pytest",
+    "pytest-asyncio"
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["pylog*"]
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = "-ra -q"
+testpaths = [
+    "tests",
+]
+pythonpath = [
+    ".",
+]

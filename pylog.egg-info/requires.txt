@@ -1,0 +1,10 @@
+orjson
+PyYAML
+watchdog
+
+[dev]
+pytest
+pytest-asyncio
+
+[kafka]
+confluent-kafka
