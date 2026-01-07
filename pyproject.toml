@@ -3,7 +3,7 @@ requires = ["setuptools>=42", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "pylog"
+name = "pylog-4j"
 version = "2.2.0"
 description = "A production-ready logging library for Python inspired by Log4j2"
 readme = "README.md"

@@ -1,0 +1,163 @@
+Metadata-Version: 2.4
+Name: pylog-4j
+Version: 2.2.0
+Summary: A production-ready logging library for Python inspired by Log4j2
+Author-email: PyLog Team <pylog@example.com>
+License: MIT
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+Requires-Dist: orjson
+Requires-Dist: PyYAML
+Requires-Dist: watchdog
+Provides-Extra: kafka
+Requires-Dist: confluent-kafka; extra == "kafka"
+Provides-Extra: dev
+Requires-Dist: pytest; extra == "dev"
+Requires-Dist: pytest-asyncio; extra == "dev"
+
+# PyLog Project
+
+**PyLog** 是一个旨在为 Python 生态系统带来 **Apache Log4j 2** 级别性能与特性的企业级日志框架。
+
+本项目基于深入的 [Log4j2 技术分析](doc/LOG4J2_ANALYSIS.md)，致力于解决 Python 原生 logging 模块在高并发、异步 I/O 及结构化日志方面的短板。
+
+**Status**: ✅ **V2.1 Production Ready** (2026-01-07)
+
+## 📦 安装 (Installation)
+
+可以通过 pip 安装（假设已发布到 PyPI）:
+
+```bash
+pip install pylog
+```
+
+或者从源码安装:
+
+```bash
+git clone https://github.com/your-repo/pylog.git
+cd pylog
+pip install .
+```
+
+## 🚀 快速开始 (Quick Start)
+
+### 1. 编写代码 (`main.py`)
+
+```python
+import pylog
+from pylog import LogManager, ThreadContext, Marker
+
+def main():
+    # 加载配置
+    LogManager.load_config("pylog_config.yaml")
+    
+    # 获取 Logger
+    logger = pylog.get_logger("my.app")
+    
+    logger.info("Application started")
+    
+    # 使用 ThreadContext (类似 MDC)
+    with ThreadContext.scope(req_id="12345", user="admin"):
+        logger.info("Processing request", action="login")
+        
+        # 使用 Marker
+        SECURITY = Marker("SECURITY")
+        logger.info("Security check passed", marker=SECURITY)
+        
+        try:
+            1 / 0
+        except ZeroDivisionError:
+            logger.exception("Calculation failed")
+
+    # Lazy Evaluation (仅当日志级别开启时才执行函数)
+    def slow_compute():
+        return "Computed Result"
+    logger.debug("Lazy result: {}", slow_compute)
+
+    LogManager.shutdown()
+
+if __name__ == "__main__":
+    main()
+```
+
+### 2. 配置文件 (`pylog_config.yaml`)
+
+```yaml
+configuration:
+  appenders:
+    console:
+      type: Console
+      target: SYSTEM_OUT
+      json_layout:
+        compact: false
+        
+    rolling_file:
+      type: RollingFileAppender
+      file_name: "logs/app.log"
+      file_pattern: "logs/app-%d{yyyy-MM-dd}.log.gz"
+      policies:
+        - type: TimeBasedTriggeringPolicy
+          interval: 1
+          modulus: 1
+      strategy:
+        type: DefaultRolloverStrategy
+        max_files: 30
+
+  loggers:
+    root:
+      level: INFO
+      appender_refs:
+        - ref: console
+        - ref: rolling_file
+        
+    my.app:
+      level: DEBUG
+      additivity: false
+      appender_refs:
+        - ref: console
+        - ref: rolling_file
+```
+
+## 📚 文档索引 (Documentation Index)
+
+以下文档构成了 PyLog 项目的理论基石与工程蓝图：
+
+| 文档名称 | 描述 | 关键内容 |
+| :--- | :--- | :--- |
+| **[Log4j2 深度技术分析报告](doc/LOG4J2_ANALYSIS.md)** | 技术对标与架构参考 | 异步内核 (Disruptor), 插件架构, 垃圾回收优化, 丰富生态 |
+| **[PyLog V2 开发规划与改进指南](doc/PYLOG_V2_DEVELOPMENT_GUIDE.md)** | 版本规划与状态 | **V2.0 已发布**，包含可靠性修复与性能基准 |
+| **[PyLog V2.1 性能优化指南](doc/PYLOG_V2.1_DEVELOPMENT_GUIDE.md)** | 性能专项规划 | Batching I/O, Kafka 集成, Zero-Copy 优化 |
+| **[PyLog API 设计规格说明书](doc/PYLOG_API_DESIGN.md)** | 接口与配置设计 | 核心 API 签名, YAML 配置结构示例, 插件注册方式 |
+
+## ✨ 核心特性 (Key Features)
+
+1.  **高性能**: `AsyncQueueHandler` 配合对象池技术，最小化主线程阻塞。
+2.  **现代化**: 原生支持 `asyncio` (`contextvars`) 与 JSON 结构化输出（支持脱敏）。
+3.  **高可用**: 提供故障转移 (Failover) 与 智能背压 (Backpressure) 保护。
+4.  **易扩展**: 基于装饰器的插件系统，轻松扩展 Appender 与 Filter。
+
+## ⚠️ 多进程环境最佳实践 (Multiprocess Safety)
+
+在多进程环境（如 Gunicorn, uWSGI）中，多个 Worker 进程同时写入同一个滚动文件（`RollingFileAppender`）极易引发文件锁竞争或日志交错。
+
+**强烈建议**:
+使用 `SocketAppender` 将日志发送至中心聚合 Agent（如 Fluentd, Logstash 或 独立的 PyLog 接收进程），避免 Worker 直接写文件。
+
+```yaml
+appenders:
+  socket:
+    type: SocketAppender
+    host: "localhost"
+    port: 9000
+```
+
+## 📅 版本计划 (Roadmap)
+
+- **V2.0 (Current)**: 生产就绪。包含完整的可靠性修复（文件清理、背压保护、配置健壮性）。
+- **V2.1 (Planned)**: 性能专项。
+    - **I/O Batching**: 引入 `BufferingAppender` 减少系统调用。
+    - **Kafka Integration**: 基于 `confluent-kafka` 的高性能投递。
+    - **Zero-Copy**: 优化 JSON 序列化与字符串拼接。
+
+---
+*Generated by PyLog Team*

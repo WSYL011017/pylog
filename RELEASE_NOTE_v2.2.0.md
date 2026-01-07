@@ -1,69 +1,20 @@
 # PyLog v2.2.0 Release Notes
 
-We are excited to announce the release of **PyLog v2.2.0**! This release brings significant flexibility to log formatting with the new **Pattern Layout** support, allowing developers to define custom log message structures similar to Log4j2's PatternLayout.
+## 新特性 (New Features)
+- **自定义日志格式 (PatternLayout)**: 引入了 `PatternFormatter`，支持用户通过字符串模板自定义日志输出格式。
+  - 支持占位符：`%d` (时间), `%t` (线程名), `%p` (日志级别), `%c` (Logger名), `%m` (消息), `%n` (换行), `%F` (文件名), `%L` (行号), `%M` (方法名)。
+  - 示例配置：`pattern: "%d [%t] %p %c - %m%n"`。
+- **增强的元数据采集**: `LogEvent` 现在默认捕获线程名、进程名、文件名、行号及函数名，为调试提供更多上下文。
+- **配置加载器更新**: `ConfigLoader` 已更新以支持 `pattern_layout` 配置项。
 
-## 🚀 New Features (新特性)
+## 改进 (Improvements)
+- **包名变更**: 项目包名已正式更改为 `pylog-4j`，以避免 PyPI 命名冲突并明确项目定位。
+- **调用栈优化**: 优化了 `Logger` 内部的堆栈遍历逻辑，确保在包装方法（如 `warn`）中也能正确获取调用者信息。
 
-### 1. Custom Pattern Layout (自定义日志格式)
-You can now customize your log output format using a pattern string, moving beyond the default JSON format.
-- **Class**: `pylog.formatters.pattern_formatter.PatternFormatter`
-- **Config Key**: `pattern_layout`
+## 修复 (Bug Fixes)
+- 修复了 `warn` 方法调用栈深度不正确导致无法获取准确行号的问题。
 
-**Supported Placeholders:**
-- `%d`: Timestamp (ISO8601) (时间)
-- `%t`: Thread Name (线程名)
-- `%p`: Log Level (日志级别)
-- `%c`: Logger Name (Logger名称/类名)
-- `%m`: Log Message (消息)
-- `%n`: Newline (换行)
-- `%F`: File Name (文件名)
-- `%L`: Line Number (行号)
-- `%M`: Method/Function Name (方法/函数名)
-
-### 2. Enhanced Context Capture (增强上下文采集)
-The core Logger has been upgraded to automatically capture rich context information for every log event:
-- **Caller Info**: Automatically detects the calling file, line number, and function name.
-- **Thread & Process**: Automatically captures current thread and process names.
-
-## 🛠 Improvements (改进)
-
-- **Configuration Loader**: Updated to support `pattern_layout` in YAML configuration files.
-- **Robustness**: Improved stack walking mechanism to accurately identify caller frames, ignoring internal logger frames.
-
-## 📦 Installation (安装)
-
-You can install the latest version from PyPI (once uploaded) or directly from the wheel file:
-
+## 安装 (Installation)
 ```bash
-pip install pylog==2.2.0
+pip install pylog-4j
 ```
-
-Or install from the built wheel:
-
-```bash
-pip install dist/pylog-2.2.0-py3-none-any.whl
-```
-
-## 📝 Configuration Example (配置示例)
-
-To use the new Pattern Layout, update your `pylog_config.yaml`:
-
-```yaml
-appenders:
-  console:
-    type: Console
-    target: SYSTEM_OUT
-    pattern_layout:
-      # Example: 2026-01-07 10:00:00 [MainThread] INFO MyClass.run:42 - Processing started
-      pattern: "%d [%t] %p %c.%M:%L - %m%n"
-
-loggers:
-  root:
-    level: INFO
-    appender_refs:
-      - ref: console
-```
-
-## 🤝 Contributors
-
-- PyLog Team
