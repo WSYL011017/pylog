@@ -4,6 +4,7 @@ from typing import Dict, Any, List
 from pylog.core.logger import LoggerConfig
 from pylog.appenders.console import ConsoleAppender
 from pylog.formatters.json_formatter import JSONFormatter
+from pylog.formatters.pattern_formatter import PatternFormatter
 
 from pylog.appenders.rolling_file import RollingFileAppender, SizeBasedTriggeringPolicy, TimeBasedTriggeringPolicy, DefaultRolloverStrategy, parse_size
 from pylog.appenders.failover import FailoverAppender
@@ -91,6 +92,10 @@ class ConfigLoader:
                 event_eol=layout_conf.get('event_eol', True),
                 masked_keys=layout_conf.get('masked_keys', [])
             )
+        elif 'pattern_layout' in conf:
+            layout_conf = conf['pattern_layout']
+            pattern = layout_conf.get('pattern', "%d [%t] %p %c - %m%n")
+            formatter = PatternFormatter(pattern=pattern)
         
         appender = None
         if 'console' in key.lower() or conf.get('type') == 'Console':

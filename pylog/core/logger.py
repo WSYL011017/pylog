@@ -1,5 +1,8 @@
 import logging
 import sys
+import os
+import threading
+import multiprocessing
 from typing import Any, Callable, Dict, List, Optional, Union
 from .log_event import LogEvent
 from .context import ThreadContext
@@ -92,6 +95,30 @@ class Logger:
         
         context = ThreadContext.get_all()
         
+        # Capture thread and process info
+        thread_name = threading.current_thread().name
+        try:
+            process_name = multiprocessing.current_process().name
+        except Exception:
+            process_name = "MainProcess"
+
+        # Capture caller info
+        file_name, line_number, func_name = "(unknown file)", 0, "(unknown function)"
+        try:
+            f = sys._getframe(1) # Start from caller of _log
+            while f:
+                co = f.f_code
+                if co.co_filename == __file__:
+                    f = f.f_back
+                    continue
+                
+                file_name = os.path.basename(co.co_filename)
+                line_number = f.f_lineno
+                func_name = co.co_name
+                break
+        except ValueError:
+            pass
+
         event = LogEvent(
             logger_name=self.name,
             level=level,
@@ -100,7 +127,12 @@ class Logger:
             marker=marker,
             context=context,
             extra=kwargs,
-            exc_info=exc_info
+            exc_info=exc_info,
+            thread_name=thread_name,
+            process_name=process_name,
+            file_name=file_name,
+            line_number=line_number,
+            func_name=func_name
         )
         
         if self.async_queue and getattr(self.async_queue, 'running', False):

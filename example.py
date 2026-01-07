@@ -9,7 +9,7 @@ from pylog import LogManager, ThreadContext, Marker
 
 def main():
     print("Loading config...")
-    LogManager.load_config("pylog_config.yaml")
+    # LogManager.load_config("pylog_config.yaml") # Auto-loaded by default if present
     
     logger = pylog.get_logger("my.app")
     

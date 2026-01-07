@@ -1,5 +1,6 @@
 from typing import Dict, Union, List, Optional
 import logging
+import os
 from pylog.core.logger import Logger, LoggerConfig
 from pylog.infra.config_loader import ConfigLoader
 from pylog.core.async_queue import AsyncQueueHandler
@@ -14,6 +15,25 @@ class LogManager:
     _root_config: LoggerConfig = LoggerConfig("root", logging.INFO)
     _async_queue: Optional[AsyncQueueHandler] = None
     _reloader: Optional[HotReloader] = None
+    _initialized: bool = False
+
+    @classmethod
+    def _try_autoload_config(cls):
+        """
+        Attempt to auto-load configuration from default files.
+        """
+        if cls._initialized:
+            return
+
+        candidates = ["pylog_config.yaml", "pylog.yaml", "pylog.json"]
+        for f in candidates:
+            if os.path.exists(f):
+                # print(f"PyLog: Auto-loading configuration from {f}")
+                cls.load_config(f)
+                return
+        
+        # Mark initialized even if no config found (use defaults)
+        cls._initialized = True
     
     @classmethod
     def _get_async_queue(cls) -> AsyncQueueHandler:
@@ -42,6 +62,7 @@ class LogManager:
         """
         Load configuration from file(s).
         """
+        cls._initialized = True
         if isinstance(files, str):
             files = [files]
             
@@ -92,6 +113,9 @@ class LogManager:
         """
         Get or create a logger.
         """
+        if not cls._initialized:
+            cls._try_autoload_config()
+
         if isinstance(name, type):
             name = name.__module__ + "." + name.__qualname__
             

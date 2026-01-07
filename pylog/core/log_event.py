@@ -17,6 +17,11 @@ class LogEvent:
         'context',
         'extra',
         'exc_info',
+        'thread_name',
+        'process_name',
+        'file_name',
+        'line_number',
+        'func_name',
         '_resolved_message'
     )
 
@@ -30,7 +35,12 @@ class LogEvent:
         context: Optional[Dict[str, Any]] = None,
         extra: Optional[Dict[str, Any]] = None,
         exc_info: Optional[Tuple] = None,
-        timestamp: Optional[float] = None
+        timestamp: Optional[float] = None,
+        thread_name: Optional[str] = None,
+        process_name: Optional[str] = None,
+        file_name: Optional[str] = None,
+        line_number: Optional[int] = None,
+        func_name: Optional[str] = None
     ):
         self.timestamp = timestamp or time.time()
         self.level = level
@@ -41,6 +51,11 @@ class LogEvent:
         self.context = context or {}
         self.extra = extra or {}
         self.exc_info = exc_info
+        self.thread_name = thread_name
+        self.process_name = process_name
+        self.file_name = file_name
+        self.line_number = line_number
+        self.func_name = func_name
         self._resolved_message: Optional[str] = None
 
     def get_message(self) -> str:
