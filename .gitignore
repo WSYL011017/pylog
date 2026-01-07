@@ -18,3 +18,5 @@ logs/
 *.pid.lock.new
 *.pid.lock.tmp
 *.pid.lock.bak
+
+.pypirc
