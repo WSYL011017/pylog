@@ -13,6 +13,7 @@ configuration:
       target: SYSTEM_OUT
       pattern_layout:
         pattern: "%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"
+
       # json_layout:
       #   compact: false
       #   masked_keys: ["password", "secret"]
