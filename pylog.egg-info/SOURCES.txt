@@ -23,6 +23,7 @@ pylog/core/marker.py
 pylog/core/metrics.py
 pylog/formatters/base.py
 pylog/formatters/json_formatter.py
+pylog/formatters/pattern_formatter.py
 pylog/infra/config_loader.py
 pylog/infra/reloader.py
 tests/test_appenders.py

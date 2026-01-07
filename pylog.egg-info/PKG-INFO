@@ -1,6 +1,6 @@
 Metadata-Version: 2.4
 Name: pylog
-Version: 2.1.0
+Version: 2.2.0
 Summary: A production-ready logging library for Python inspired by Log4j2
 Author-email: PyLog Team <pylog@example.com>
 License: MIT
